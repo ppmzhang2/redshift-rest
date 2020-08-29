@@ -1,7 +1,8 @@
 from functools import wraps
-from typing import List
+from typing import List, NoReturn
 
 from sqlalchemy import create_engine
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker, Session
 
 from config import Config
@@ -35,7 +36,7 @@ class Dao(metaclass=SingletonMeta):
     __slots__ = ['_engine']
 
     def __init__(self, echo=False):
-        self._engine = create_engine(
+        self._engine: Engine = create_engine(
             f'redshift+psycopg2://{Config.RS_USR}:{Config.RS_PWD}'
             f'@{Config.RS_HOST}:{Config.RS_PORT}/{Config.RS_DB}',
             echo=echo,
@@ -45,20 +46,20 @@ class Dao(metaclass=SingletonMeta):
             pool_recycle=3600,
             pool_timeout=30)
 
-    def _get_session(self):
+    def _get_session(self) -> Session:
         _Session = sessionmaker(bind=self._engine)
         return _Session()
 
-    def reset_engine(self):
+    def reset_engine(self) -> NoReturn:
         """Dispose of the connection pool
 
         """
         self._engine.dispose()
 
-    def create_all(self):
+    def create_all(self) -> NoReturn:
         Base.metadata.create_all(self._engine)
 
-    def drop_all(self):
+    def drop_all(self) -> NoReturn:
         """drop all tables defined in `redshift.tables`
 
         there's no native `DROP TABLE ... CASCADE ...` method and tables should
@@ -73,7 +74,7 @@ class Dao(metaclass=SingletonMeta):
     def all_tables(self) -> List[str]:
         return self._engine.table_names()
 
-    def all_users(self):
+    def all_users(self) -> List[Users]:
         @_commit
         def _all_users(session: Session):
             return session.query(Users).all()
