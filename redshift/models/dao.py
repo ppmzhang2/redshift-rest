@@ -1,11 +1,13 @@
 from functools import wraps
+from typing import List
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
 from config import Config
 from redshift.models.base import Base
-from redshift.models.tables import Users
+from redshift.models.tables import Users, Venue, Category, Date, Event, \
+    Listing, Sales
 
 __all__ = ['Dao']
 
@@ -57,8 +59,19 @@ class Dao(metaclass=SingletonMeta):
         Base.metadata.create_all(self._engine)
 
     def drop_all(self):
-        self.reset_engine()
-        Users.__table__.drop(self._engine)
+        """drop all tables defined in `redshift.tables`
+
+        there's no native `DROP TABLE ... CASCADE ...` method and tables should
+        be dropped from the leaves of the dependency tree back to the root
+        """
+        tables = (Sales, Listing, Event, Users, Venue, Category, Date)
+        list(
+            map(
+                lambda tb: tb.__table__.drop(bind=self._engine,
+                                             checkfirst=True), tables))
+
+    def all_tables(self) -> List[str]:
+        return self._engine.table_names()
 
     def all_users(self):
         @_commit
