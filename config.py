@@ -10,3 +10,6 @@ class Config(object):
     RS_HOST = 'id.redshift.amazonaws.com'
     RS_PORT = '5439'
     RS_DB = 'dev'
+    RS_IAM_ROLE = ''
+    S3_BUCKET = ''
+    S3_REGION = ''

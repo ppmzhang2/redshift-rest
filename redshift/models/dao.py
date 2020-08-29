@@ -1,7 +1,8 @@
+import re
 from functools import wraps
-from typing import List, NoReturn
+from typing import List, NoReturn, Optional
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker, Session
 
@@ -74,9 +75,94 @@ class Dao(metaclass=SingletonMeta):
     def all_tables(self) -> List[str]:
         return self._engine.table_names()
 
+    def load_sample(self) -> NoReturn:
+        def statement(table: str, filename: str, delimiter: str,
+                      timeformat: str) -> str:
+            return f'''copy {table} from
+                's3://{Config.S3_BUCKET}/tickit/{filename}'
+                credentials 'aws_iam_role={Config.RS_IAM_ROLE}'
+                delimiter '{delimiter}' {timeformat}
+                region '{Config.S3_REGION}';
+                '''
+
+        dlm_map = {'pipe': '|', 'tab': '\\t'}
+        tables = [
+            'users', 'venue', 'category', 'date', 'event', 'listing', 'sales'
+        ]
+        files = [
+            'allusers_pipe.txt',
+            'venue_pipe.txt',
+            'category_pipe.txt',
+            'date2008_pipe.txt',
+            'allevents_pipe.txt',
+            'listings_pipe.txt',
+            'sales_tab.txt',
+        ]
+        delimiters = [
+            dlm_map[next(
+                filter(lambda i: i in ['pipe', 'tab'], re.split(r'[_.]', s)))]
+            for s in files
+        ]
+        formats = [
+            '', '', '', '', "timeformat 'YYYY-MM-DD HH:MI:SS'", '',
+            "timeformat 'MM/DD/YYYY HH:MI:SS'"
+        ]
+        with self._engine.begin() as conn:
+            for tb, file, dlm, fmt in zip(tables, files, delimiters, formats):
+                conn.execute(statement(tb, file, dlm, fmt))
+
     def all_users(self) -> List[Users]:
         @_commit
         def _all_users(session: Session):
             return session.query(Users).all()
 
         return _all_users(self._get_session())
+
+    def count_users(self) -> Optional[int]:
+        @_commit
+        def helper(session: Session):
+            return session.query(func.count(Users.userid)).scalar()
+
+        return helper(self._get_session())
+
+    def count_venue(self) -> Optional[int]:
+        @_commit
+        def helper(session: Session):
+            return session.query(func.count(Venue.venueid)).scalar()
+
+        return helper(self._get_session())
+
+    def count_category(self) -> Optional[int]:
+        @_commit
+        def helper(session: Session):
+            return session.query(func.count(Category.catid)).scalar()
+
+        return helper(self._get_session())
+
+    def count_date(self) -> Optional[int]:
+        @_commit
+        def helper(session: Session):
+            return session.query(func.count(Date.dateid)).scalar()
+
+        return helper(self._get_session())
+
+    def count_event(self) -> Optional[int]:
+        @_commit
+        def helper(session: Session):
+            return session.query(func.count(Event.eventid)).scalar()
+
+        return helper(self._get_session())
+
+    def count_listing(self) -> Optional[int]:
+        @_commit
+        def helper(session: Session):
+            return session.query(func.count(Listing.listid)).scalar()
+
+        return helper(self._get_session())
+
+    def count_sales(self) -> Optional[int]:
+        @_commit
+        def helper(session: Session):
+            return session.query(func.count(Sales.salesid)).scalar()
+
+        return helper(self._get_session())
