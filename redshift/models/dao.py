@@ -1,3 +1,4 @@
+import datetime
 import re
 from functools import wraps
 from typing import List, NoReturn, Optional
@@ -164,5 +165,20 @@ class Dao(metaclass=SingletonMeta):
         @_commit
         def helper(session: Session):
             return session.query(func.count(Sales.salesid)).scalar()
+
+        return helper(self._get_session())
+
+    def total_sales(self, dt: str) -> Optional[int]:
+        """total sales on a given calendar date.
+
+        :param dt: date string formatted as 'yyyy-mm-dd'
+        :return: total sales on that day
+        """
+        @_commit
+        def helper(session: Session):
+            return session.query(func.sum(
+                Sales.qtysold).label('total_sold')).join(
+                    Date, Sales.dateid == Date.dateid).filter(
+                        Date.caldate == dt).scalar()
 
         return helper(self._get_session())

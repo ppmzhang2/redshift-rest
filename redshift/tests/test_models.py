@@ -65,6 +65,11 @@ class TestModel(unittest.TestCase):
             for f, exp in mappings:
                 self.assertEqual(f(), exp)
 
+    def test_total_sales(self):
+        dt = '2008-01-05'
+        exp = 210
+        self.assertEqual(exp, self.dao.total_sales(dt))
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
