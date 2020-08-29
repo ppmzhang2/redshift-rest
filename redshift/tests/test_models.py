@@ -1,8 +1,7 @@
 import unittest
-from datetime import date
+from functools import reduce
 
 from redshift.models.dao import Dao
-from redshift.models.tables import Users
 
 
 class TestModel(unittest.TestCase):
@@ -34,11 +33,37 @@ class TestModel(unittest.TestCase):
         exp = {
             'sales', 'listing', 'event', 'users', 'venue', 'category', 'date'
         }
-        self.dao.create_all()
-        self.dao.drop_all()
-        self.dao.create_all()
         tables = self.dao.all_tables()
-        self.assertEqual(exp, set(tables))
+        if exp == set(tables):
+            return
+        else:
+            self.dao.drop_all()
+            self.dao.create_all()
+            self.assertEqual(exp, set(self.dao.all_tables()))
+
+    def test_load(self):
+        """test load sample & count
+
+        methods:
+          * dao.load_sample
+          * dao.count_<table_name>
+
+        """
+        mappings = [(self.dao.count_users, 49990), (self.dao.count_venue, 202),
+                    (self.dao.count_category, 11), (self.dao.count_date, 365),
+                    (self.dao.count_event, 8798),
+                    (self.dao.count_listing, 192497),
+                    (self.dao.count_sales, 172456)]
+
+        if reduce(lambda x, y: x and y, (f() == exp for f, exp in mappings)):
+            return
+        else:
+            self.dao.drop_all()
+            self.dao.create_all()
+            self.dao.load_sample()
+
+            for f, exp in mappings:
+                self.assertEqual(f(), exp)
 
 
 if __name__ == '__main__':

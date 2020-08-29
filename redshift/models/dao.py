@@ -1,8 +1,8 @@
 import re
 from functools import wraps
-from typing import List, NoReturn
+from typing import List, NoReturn, Optional
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker, Session
 
@@ -117,3 +117,52 @@ class Dao(metaclass=SingletonMeta):
             return session.query(Users).all()
 
         return _all_users(self._get_session())
+
+    def count_users(self) -> Optional[int]:
+        @_commit
+        def helper(session: Session):
+            return session.query(func.count(Users.userid)).scalar()
+
+        return helper(self._get_session())
+
+    def count_venue(self) -> Optional[int]:
+        @_commit
+        def helper(session: Session):
+            return session.query(func.count(Venue.venueid)).scalar()
+
+        return helper(self._get_session())
+
+    def count_category(self) -> Optional[int]:
+        @_commit
+        def helper(session: Session):
+            return session.query(func.count(Category.catid)).scalar()
+
+        return helper(self._get_session())
+
+    def count_date(self) -> Optional[int]:
+        @_commit
+        def helper(session: Session):
+            return session.query(func.count(Date.dateid)).scalar()
+
+        return helper(self._get_session())
+
+    def count_event(self) -> Optional[int]:
+        @_commit
+        def helper(session: Session):
+            return session.query(func.count(Event.eventid)).scalar()
+
+        return helper(self._get_session())
+
+    def count_listing(self) -> Optional[int]:
+        @_commit
+        def helper(session: Session):
+            return session.query(func.count(Listing.listid)).scalar()
+
+        return helper(self._get_session())
+
+    def count_sales(self) -> Optional[int]:
+        @_commit
+        def helper(session: Session):
+            return session.query(func.count(Sales.salesid)).scalar()
+
+        return helper(self._get_session())
