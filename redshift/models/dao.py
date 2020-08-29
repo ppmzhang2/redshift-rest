@@ -1,10 +1,23 @@
+from functools import wraps
+
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 
 from config import Config
 from redshift.models.base import Base
+from redshift.models.tables import Users
 
 __all__ = ['Dao']
+
+
+def _commit(fn):
+    @wraps(fn)
+    def helper(*args, **kwargs):
+        res = fn(*args, **kwargs)
+        args[0].commit()
+        return res
+
+    return helper
 
 
 class SingletonMeta(type):
@@ -30,9 +43,26 @@ class Dao(metaclass=SingletonMeta):
             pool_recycle=3600,
             pool_timeout=30)
 
-    def _session_maker(self):
+    def _get_session(self):
         _Session = sessionmaker(bind=self._engine)
         return _Session()
 
-    def _create_tables(self):
+    def reset_engine(self):
+        """Dispose of the connection pool
+
+        """
+        self._engine.dispose()
+
+    def create_all(self):
         Base.metadata.create_all(self._engine)
+
+    def drop_all(self):
+        self.reset_engine()
+        Users.__table__.drop(self._engine)
+
+    def all_users(self):
+        @_commit
+        def _all_users(session: Session):
+            return session.query(Users).all()
+
+        return _all_users(self._get_session())
