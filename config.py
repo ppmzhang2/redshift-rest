@@ -4,6 +4,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config(object):
+    # REST
+    REST_URL_PREFIX = '/api/v1'
+    REST_HOST = '0.0.0.0'
+    REST_PORT = '8000'
     # Redshift
     RS_USR = 'awsuser'
     RS_PWD = ''
