@@ -13,6 +13,8 @@ from redshift.models.tables import Users, Venue, Category, Date, Event, \
 
 __all__ = ['Dao']
 
+from redshift.singleton_meta import SingletonMeta
+
 
 def _commit(fn):
     @wraps(fn)
@@ -22,15 +24,6 @@ def _commit(fn):
         return res
 
     return helper
-
-
-class SingletonMeta(type):
-    _instance = None
-
-    def __call__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super(SingletonMeta, cls).__call__(*args, **kwargs)
-        return cls._instance
 
 
 class Dao(metaclass=SingletonMeta):
@@ -164,5 +157,20 @@ class Dao(metaclass=SingletonMeta):
         @_commit
         def helper(session: Session):
             return session.query(func.count(Sales.salesid)).scalar()
+
+        return helper(self._get_session())
+
+    def total_sales(self, dt: str) -> Optional[int]:
+        """total sales on a given calendar date.
+
+        :param dt: date string formatted as 'yyyy-mm-dd'
+        :return: total sales on that day
+        """
+        @_commit
+        def helper(session: Session):
+            return session.query(func.sum(
+                Sales.qtysold).label('total_sold')).join(
+                    Date, Sales.dateid == Date.dateid).filter(
+                        Date.caldate == dt).scalar()
 
         return helper(self._get_session())
