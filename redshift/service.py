@@ -7,30 +7,29 @@ from redshift.rest.db_api import DbApi
 
 
 class Service(object):
-    __slots__ = ['_app', '_db_api']
+    __slots__ = ['app', '_db_api']
 
     def __init__(self):
-        self._app = web.Application()
+        self.app = web.Application()
         self._db_api = DbApi()
-        self._app.router.add_routes([
+        self.app.router.add_routes([
             web.get(f'{Config.REST_URL_PREFIX}/sales',
                     self._db_api.json_total_sales)
         ])
 
     async def _get_runner(self):
-        runner = web.AppRunner(self._app)
+        runner = web.AppRunner(self.app)
         await runner.setup()
         return runner
 
-    async def _get_server(self, loop):
+    async def _get_server(self, loop, host, port):
         runner = await self._get_runner()
-        server = await loop.create_server(runner.server, Config.REST_HOST,
-                                          Config.REST_PORT)
+        server = await loop.create_server(runner.server, host, port)
         return server
 
-    def run(self):
+    def run(self, host: str = '127.0.0.1', port: str = '8000'):
         loop = asyncio.get_event_loop()
-        srv = loop.run_until_complete(self._get_server(loop))
+        srv = loop.run_until_complete(self._get_server(loop, host, port))
         print('serving on', srv.sockets[0].getsockname())
 
         try:
@@ -40,6 +39,6 @@ class Service(object):
         finally:
             srv.close()
             loop.run_until_complete(srv.wait_closed())
-            loop.run_until_complete(self._app.shutdown())
-            loop.run_until_complete(self._app.cleanup())
+            loop.run_until_complete(self.app.shutdown())
+            loop.run_until_complete(self.app.cleanup())
         loop.close()
