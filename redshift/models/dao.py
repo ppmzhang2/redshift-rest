@@ -1,4 +1,3 @@
-import datetime
 import re
 from functools import wraps
 from typing import List, NoReturn, Optional
@@ -14,6 +13,8 @@ from redshift.models.tables import Users, Venue, Category, Date, Event, \
 
 __all__ = ['Dao']
 
+from redshift.singleton_meta import SingletonMeta
+
 
 def _commit(fn):
     @wraps(fn)
@@ -23,15 +24,6 @@ def _commit(fn):
         return res
 
     return helper
-
-
-class SingletonMeta(type):
-    _instance = None
-
-    def __call__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super(SingletonMeta, cls).__call__(*args, **kwargs)
-        return cls._instance
 
 
 class Dao(metaclass=SingletonMeta):
