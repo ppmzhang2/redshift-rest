@@ -22,15 +22,14 @@ class Service(object):
         await runner.setup()
         return runner
 
-    async def _get_server(self, loop):
+    async def _get_server(self, loop, host, port):
         runner = await self._get_runner()
-        server = await loop.create_server(runner.server, Config.REST_HOST,
-                                          Config.REST_PORT)
+        server = await loop.create_server(runner.server, host, port)
         return server
 
-    def run(self):
+    def run(self, host: str = '127.0.0.1', port: str = '8000'):
         loop = asyncio.get_event_loop()
-        srv = loop.run_until_complete(self._get_server(loop))
+        srv = loop.run_until_complete(self._get_server(loop, host, port))
         print('serving on', srv.sockets[0].getsockname())
 
         try:
