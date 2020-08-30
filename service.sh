@@ -1,7 +1,7 @@
 #!/bin/bash
 ### BEGIN INIT INFO
 #
-# Short-Description: start / stop flask service
+# Short-Description: start / stop service
 # Description:
 #
 ### END INIT INFO
