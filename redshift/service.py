@@ -7,18 +7,18 @@ from redshift.rest.db_api import DbApi
 
 
 class Service(object):
-    __slots__ = ['_app', '_db_api']
+    __slots__ = ['app', '_db_api']
 
     def __init__(self):
-        self._app = web.Application()
+        self.app = web.Application()
         self._db_api = DbApi()
-        self._app.router.add_routes([
+        self.app.router.add_routes([
             web.get(f'{Config.REST_URL_PREFIX}/sales',
                     self._db_api.json_total_sales)
         ])
 
     async def _get_runner(self):
-        runner = web.AppRunner(self._app)
+        runner = web.AppRunner(self.app)
         await runner.setup()
         return runner
 
@@ -40,6 +40,6 @@ class Service(object):
         finally:
             srv.close()
             loop.run_until_complete(srv.wait_closed())
-            loop.run_until_complete(self._app.shutdown())
-            loop.run_until_complete(self._app.cleanup())
+            loop.run_until_complete(self.app.shutdown())
+            loop.run_until_complete(self.app.cleanup())
         loop.close()
