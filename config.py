@@ -32,14 +32,14 @@ class Config(object):
             'small': {
                 'format':
                 '%(asctime)s [%(levelname)s] '
-                '%(name)s - %(module)s - %(filename)s - %(lineno)s: '
+                '%(module)s - %(filename)s - %(lineno)s: '
                 '%(message)s',
             },
         },
         'handlers': {
             'info_file': {
                 'level': 'INFO',
-                'formatter': 'micro',
+                'formatter': 'small',
                 'class': 'logging.handlers.TimedRotatingFileHandler',
                 'when': 'H',
                 'interval': 1,

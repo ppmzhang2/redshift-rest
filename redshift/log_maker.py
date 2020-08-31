@@ -13,7 +13,8 @@ class LogMaker(object):
                 res = fn(*args, **kwargs)
                 return res
             except Exception as ex:
-                self._logger.error(f'function "{fn.__name__}": {ex.__str__()}')
+                self._logger.error(f'[{fn.__module__} - {fn.__name__}]: '
+                                   f'{ex.__str__()}')
                 raise ex
 
         return helper
