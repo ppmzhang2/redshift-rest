@@ -32,7 +32,7 @@ class Config(object):
             'small': {
                 'format':
                 '%(asctime)s [%(levelname)s] '
-                '%(module)s - %(filename)s - %(lineno)s: '
+                '%(real_module)s - %(real_funcName)s - %(real_lineno)s: '
                 '%(message)s',
             },
         },
@@ -64,7 +64,7 @@ class Config(object):
         },
         'loggers': {
             'info_logger': {
-                'handlers': ['debug_streamer', 'info_file'],
+                'handlers': ['debug_file', 'info_file'],
                 'level': 'DEBUG',
                 'propagate': False,
             },
