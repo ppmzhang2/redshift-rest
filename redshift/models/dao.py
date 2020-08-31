@@ -18,6 +18,7 @@ __all__ = ['Dao']
 
 logging.config.dictConfig(Config.LOGGING)
 logger = logging.getLogger('info_logger')
+log_maker = LogMaker(logger)
 
 
 def _commit(fn):
@@ -48,18 +49,18 @@ class Dao(metaclass=SingletonMeta):
         _Session = sessionmaker(bind=self._engine)
         return _Session()
 
-    @LogMaker(logger)
+    @log_maker
     def reset_engine(self) -> NoReturn:
         """Dispose of the connection pool
 
         """
         self._engine.dispose()
 
-    @LogMaker(logger)
+    @log_maker
     def create_all(self) -> NoReturn:
         Base.metadata.create_all(self._engine)
 
-    @LogMaker(logger)
+    @log_maker
     def drop_all(self) -> NoReturn:
         """drop all tables defined in `redshift.tables`
 
@@ -72,11 +73,11 @@ class Dao(metaclass=SingletonMeta):
                 lambda tb: tb.__table__.drop(bind=self._engine,
                                              checkfirst=True), tables))
 
-    @LogMaker(logger)
+    @log_maker
     def all_tables(self) -> List[str]:
         return self._engine.table_names()
 
-    @LogMaker(logger)
+    @log_maker
     def load_sample(self) -> NoReturn:
         def statement(table: str, filename: str, delimiter: str,
                       timeformat: str) -> str:
@@ -113,7 +114,7 @@ class Dao(metaclass=SingletonMeta):
             for tb, file, dlm, fmt in zip(tables, files, delimiters, formats):
                 conn.execute(statement(tb, file, dlm, fmt))
 
-    @LogMaker(logger)
+    @log_maker
     def all_users(self) -> List[Users]:
         @_commit
         def _all_users(session: Session):
@@ -121,7 +122,7 @@ class Dao(metaclass=SingletonMeta):
 
         return _all_users(self._get_session())
 
-    @LogMaker(logger)
+    @log_maker
     def count_users(self) -> Optional[int]:
         @_commit
         def helper(session: Session):
@@ -129,7 +130,7 @@ class Dao(metaclass=SingletonMeta):
 
         return helper(self._get_session())
 
-    @LogMaker(logger)
+    @log_maker
     def count_venue(self) -> Optional[int]:
         @_commit
         def helper(session: Session):
@@ -137,7 +138,7 @@ class Dao(metaclass=SingletonMeta):
 
         return helper(self._get_session())
 
-    @LogMaker(logger)
+    @log_maker
     def count_category(self) -> Optional[int]:
         @_commit
         def helper(session: Session):
@@ -145,7 +146,7 @@ class Dao(metaclass=SingletonMeta):
 
         return helper(self._get_session())
 
-    @LogMaker(logger)
+    @log_maker
     def count_date(self) -> Optional[int]:
         @_commit
         def helper(session: Session):
@@ -153,7 +154,7 @@ class Dao(metaclass=SingletonMeta):
 
         return helper(self._get_session())
 
-    @LogMaker(logger)
+    @log_maker
     def count_event(self) -> Optional[int]:
         @_commit
         def helper(session: Session):
@@ -161,7 +162,7 @@ class Dao(metaclass=SingletonMeta):
 
         return helper(self._get_session())
 
-    @LogMaker(logger)
+    @log_maker
     def count_listing(self) -> Optional[int]:
         @_commit
         def helper(session: Session):
@@ -169,7 +170,7 @@ class Dao(metaclass=SingletonMeta):
 
         return helper(self._get_session())
 
-    @LogMaker(logger)
+    @log_maker
     def count_sales(self) -> Optional[int]:
         @_commit
         def helper(session: Session):
@@ -177,7 +178,7 @@ class Dao(metaclass=SingletonMeta):
 
         return helper(self._get_session())
 
-    @LogMaker(logger)
+    @log_maker
     def total_sales(self, dt: str) -> Optional[int]:
         """total sales on a given calendar date.
 

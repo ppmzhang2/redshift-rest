@@ -9,6 +9,7 @@ from redshift.models.dao import Dao
 
 logging.config.dictConfig(Config.LOGGING)
 logger = logging.getLogger('info_logger')
+log_maker = LogMaker(logger)
 
 
 class DbApi(object):
@@ -17,7 +18,7 @@ class DbApi(object):
     def __init__(self):
         self._dao = Dao()
 
-    @LogMaker('info_logger')
+    @log_maker
     async def json_total_sales(self, request: Request):
         date = request.rel_url.query.get('date')
         sales = self._dao.total_sales(dt=date)
