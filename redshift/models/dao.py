@@ -10,10 +10,9 @@ from config import Config
 from redshift.models.base import Base
 from redshift.models.tables import Users, Venue, Category, Date, Event, \
     Listing, Sales
+from redshift.singleton_meta import SingletonMeta
 
 __all__ = ['Dao']
-
-from redshift.singleton_meta import SingletonMeta
 
 
 def _commit(fn):
