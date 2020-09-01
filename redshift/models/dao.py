@@ -7,7 +7,7 @@ from sqlalchemy import create_engine, func
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from config import Config
+from redshift import cfg
 from redshift.log_maker import LogMaker
 from redshift.models.base import Base
 from redshift.models.tables import Users, Venue, Category, Date, Event, \
@@ -16,7 +16,7 @@ from redshift.singleton_meta import SingletonMeta
 
 __all__ = ['Dao']
 
-logging.config.dictConfig(Config.LOGGING)
+logging.config.dictConfig(cfg.LOGGING)
 logger = logging.getLogger('info_logger')
 log_maker = LogMaker(logger)
 
@@ -36,8 +36,8 @@ class Dao(metaclass=SingletonMeta):
 
     def __init__(self, echo=False):
         self._engine: Engine = create_engine(
-            f'redshift+psycopg2://{Config.RS_USR}:{Config.RS_PWD}'
-            f'@{Config.RS_HOST}:{Config.RS_PORT}/{Config.RS_DB}',
+            f'redshift+psycopg2://{cfg.RS_USR}:{cfg.RS_PWD}'
+            f'@{cfg.RS_HOST}:{cfg.RS_PORT}/{cfg.RS_DB}',
             echo=echo,
             echo_pool=echo,
             pool_size=20,
@@ -82,10 +82,10 @@ class Dao(metaclass=SingletonMeta):
         def statement(table: str, filename: str, delimiter: str,
                       timeformat: str) -> str:
             return f'''copy {table} from
-                's3://{Config.S3_BUCKET}/tickit/{filename}'
-                credentials 'aws_iam_role={Config.RS_IAM_ROLE}'
+                's3://{cfg.S3_BUCKET}/tickit/{filename}'
+                credentials 'aws_iam_role={cfg.RS_IAM_ROLE}'
                 delimiter '{delimiter}' {timeformat}
-                region '{Config.S3_REGION}';
+                region '{cfg.S3_REGION}';
                 '''
 
         dlm_map = {'pipe': '|', 'tab': '\\t'}

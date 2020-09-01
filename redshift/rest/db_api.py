@@ -3,11 +3,11 @@ import logging.config
 from aiohttp import web
 from aiohttp.abc import Request
 
-from config import Config
+from redshift import cfg
 from redshift.log_maker import LogMaker
 from redshift.models.dao import Dao
 
-logging.config.dictConfig(Config.LOGGING)
+logging.config.dictConfig(cfg.LOGGING)
 logger = logging.getLogger('info_logger')
 log_maker = LogMaker(logger)
 

@@ -11,7 +11,7 @@ class Config(object):
     RS_PWD = ''
     RS_HOST = 'id.redshift.amazonaws.com'
     RS_PORT = '5439'
-    RS_DB = 'dev'
+    RS_DB = 'prod'
     RS_IAM_ROLE = ''
     S3_BUCKET = ''
     S3_REGION = ''
@@ -70,3 +70,7 @@ class Config(object):
             },
         },
     }
+
+
+class TestConfig(Config):
+    RS_DB = 'dev'
