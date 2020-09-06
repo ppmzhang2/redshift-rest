@@ -4,24 +4,36 @@ An `aiohttp` based REST service on querying Amazon Redshift. The sample data can
 
 ## Usage
 
-The environment variable `PYTHON_ENV` is expected to be assigned with a valid Python environment path before starting service.
-
-In trivial cases like testing or debugging, execute the `run.py` directly:
+After installing `docker engine` and `docker-compose`, build via `docker-compose.yml`:
 
 ```shell
-${PYTHON_ENV}/bin/python run.py
+docker-compose up
 ```
 
-To utilize all CPU cores, start with Gunicorn:
+It is recommended to create a `systemd` script `/etc/systemd/system/docker-redshift-rest.service` to auto-start service on boot. Change the `WorkingDirectory` parameter with your project path:
 
-```shell
-./service.sh start
+```ini
+[Unit]
+Description=Docker Compose Application Service
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/home/ec2-user/redshift-rest
+ExecStart=/usr/local/bin/docker-compose up -d
+ExecStop=/usr/local/bin/docker-compose down
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target
 ```
 
-To stop service, use the same script:
+Enable the service to start automatically:
 
 ```shell
-./service.sh stop
+sudo systemctl enable docker-redshift-rest
 ```
 
 ## API
