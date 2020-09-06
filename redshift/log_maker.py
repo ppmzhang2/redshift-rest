@@ -2,6 +2,8 @@ import inspect
 import logging.config
 from functools import wraps
 
+from aiohttp.abc import Request
+
 
 class LogMaker(object):
     def __init__(self, logger: logging.Logger):
@@ -22,6 +24,28 @@ class LogMaker(object):
             self._logger.debug('[STARTED]', extra=extra)
             try:
                 return fn(*args, **kwargs)
+            except Exception as ex:
+                self._logger.error(f'{ex}', extra=extra)
+                raise ex
+            finally:
+                self._logger.debug('[ENDED]', extra=extra)
+
+        return helper
+
+
+class LogDbApi(LogMaker):
+    """logging decorator for DbApi REST coroutines
+
+    """
+    def __call__(self, fn):
+        @wraps(fn)
+        async def helper(instance, request: Request, *args, **kwargs):
+            extra = self._func_extra(fn)
+            self._logger.debug(
+                f'[STARTED] {request.remote} | {request.query_string}',
+                extra=extra)
+            try:
+                return await fn(instance, request, *args, **kwargs)
             except Exception as ex:
                 self._logger.error(f'{ex}', extra=extra)
                 raise ex

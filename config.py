@@ -7,14 +7,14 @@ class Config(object):
     # REST
     REST_URL_PREFIX = '/api/v1'
     # Redshift
-    RS_USR = 'awsuser'
-    RS_PWD = ''
-    RS_HOST = 'id.redshift.amazonaws.com'
-    RS_PORT = '5439'
-    RS_DB = 'prod'
-    RS_IAM_ROLE = ''
-    S3_BUCKET = ''
-    S3_REGION = ''
+    RS_USR = os.environ.get('RS_USR', 'awsuser')
+    RS_PWD = os.environ.get('RS_PWD', 'password')
+    RS_HOST = os.environ.get('RS_HOST', '127.0.0.1')
+    RS_PORT = os.environ.get('RS_PORT', '5439')
+    RS_DB = os.environ.get('RS_DB', 'prod')
+    RS_IAM_ROLE = os.environ.get('RS_IAM_ROLE', 'DEFAULT_ROLE')
+    S3_BUCKET = os.environ.get('S3_BUCKET', 'S3_BUCKET_ID')
+    S3_REGION = os.environ.get('S3_REGION', 'S3_REGION_ID')
     # Logging
     LOGGING = {
         'version': 1,
@@ -73,4 +73,4 @@ class Config(object):
 
 
 class TestConfig(Config):
-    RS_DB = 'dev'
+    RS_DB = os.environ.get('RS_DB_TEST', 'dev')
