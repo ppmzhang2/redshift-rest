@@ -3,7 +3,7 @@
 CPUS=$(getconf _NPROCESSORS_ONLN 2> /dev/null)
 LOG_FILE="/app/logs/gunicorn.log"
 WORKERS=$((2*CPUS+1))
-BIND=127.0.0.1:8000
+BIND=0.0.0.0:8000
 APP_MODULE=run:app
 
 exec gunicorn $APP_MODULE --bind=$BIND \

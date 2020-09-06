@@ -2,6 +2,16 @@ version: "3.8"
 services:
   wsgi:
     build: .
+    environment:
+      - RS_USR=awsuser
+      - RS_PWD=${RS_PWD:-password}
+      - RS_HOST=${RS_HOST:-localhost}
+      - RS_PORT=5439
+      - RS_DB=prod
+      - RS_DB_TEST=dev
+      - RS_IAM_ROLE=${RS_IAM_ROLE:-DEFAULT_ROLE}
+      - S3_BUCKET=${S3_BUCKET:-S3_BUCKET_ID}
+      - S3_REGION=${S3_REGION:-S3_REGION_ID}
     restart: always
     ports:
       - 8000:8000
