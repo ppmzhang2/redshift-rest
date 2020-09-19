@@ -12,6 +12,7 @@ services:
   wsgi:
     build: .
     environment:
+      - ENV=test
       - RS_USR=awsuser
       - RS_PWD=${RS_PWD:-password}
       - RS_HOST=${RS_HOST:-localhost}
