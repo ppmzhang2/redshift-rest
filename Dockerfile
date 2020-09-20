@@ -1,6 +1,6 @@
 FROM python:3.8.5-buster
 
-MAINTAINER "Meng <ztz2000@gmail.com>"
+LABEL maintainer="Meng <ztz2000@gmail.com>"
 
 COPY . /app
 
