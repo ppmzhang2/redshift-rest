@@ -6,8 +6,8 @@ COPY . /app
 
 WORKDIR /app
 
-RUN pip install -r /app/requirements.txt \
-    && mkdir -p /app/logs \
-    && chmod +x /app/wsgi.sh
+RUN rm -rf /var/log/supervisord \
+    && mkdir -p /var/log/supervisord \
+    && pip install -r /app/requirements.txt
 
-CMD ["/app/wsgi.sh"]
+CMD ["supervisord", "-c", "/app/etc/wsgi/supervisord.conf"]

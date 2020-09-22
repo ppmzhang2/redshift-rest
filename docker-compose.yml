@@ -4,6 +4,7 @@ services:
     image: nginx:latest
     volumes:
       - ./etc/nginx:/etc/nginx/conf.d
+      - ./logs/nginx:/var/log/nginx
     restart: always
     ports:
       - 80:80
@@ -24,7 +25,8 @@ services:
       - S3_REGION=${S3_REGION:-S3_REGION_ID}
     restart: always
     volumes:
-      - ./logs:/app/logs
+      - ./logs/rest:/app/logs/rest
+      - ./logs/wsgi:/var/log/supervisord
     networks:
       - restnet
 
