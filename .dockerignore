@@ -52,6 +52,6 @@ venv
 *.seed
 *.pid.lock
 
+.git/
 .idea/
-.vscode/
 .DS_Store

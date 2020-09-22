@@ -44,7 +44,7 @@ class Config(object):
                 'when': 'H',
                 'interval': 1,
                 'backupCount': 6,
-                'filename': f'{basedir}/logs/info.log',
+                'filename': f'{basedir}/logs/rest/info.log',
             },
             'debug_streamer': {
                 'level': 'DEBUG',
@@ -59,7 +59,7 @@ class Config(object):
                 'when': 'M',
                 'interval': 1,
                 'backupCount': 30,
-                'filename': f'{basedir}/logs/debug.log',
+                'filename': f'{basedir}/logs/rest/debug.log',
             },
         },
         'loggers': {

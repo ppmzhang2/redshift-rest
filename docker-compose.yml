@@ -4,6 +4,7 @@ services:
     image: nginx:latest
     volumes:
       - ./etc/nginx:/etc/nginx/conf.d
+      - ./logs/nginx:/var/log/nginx
     restart: always
     ports:
       - 80:80
@@ -12,6 +13,7 @@ services:
   wsgi:
     build: .
     environment:
+      - ENV=test
       - RS_USR=awsuser
       - RS_PWD=${RS_PWD:-password}
       - RS_HOST=${RS_HOST:-localhost}
@@ -22,10 +24,9 @@ services:
       - S3_BUCKET=${S3_BUCKET:-S3_BUCKET_ID}
       - S3_REGION=${S3_REGION:-S3_REGION_ID}
     restart: always
-    ports:
-      - 8000
     volumes:
-      - ./logs:/app/logs
+      - ./logs/rest:/app/logs/rest
+      - ./logs/wsgi:/var/log/supervisord
     networks:
       - restnet
 
