@@ -24,7 +24,8 @@ services:
       - S3_REGION=${S3_REGION:-S3_REGION_ID}
     restart: always
     volumes:
-      - ./logs:/app/logs
+      - ./logs/rest:/app/logs/rest
+      - ./logs/wsgi:/var/log/supervisord
     networks:
       - restnet
 
