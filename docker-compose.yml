@@ -4,6 +4,7 @@ services:
     image: nginx:latest
     volumes:
       - ./etc/nginx:/etc/nginx/conf.d
+      - ./logs/nginx:/var/log/nginx
     restart: always
     ports:
       - 80:80
