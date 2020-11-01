@@ -16,7 +16,7 @@ async def total_sales(date: str):
         dt = datetime.strptime(date, fmt)
         dt_str = dt.strftime(fmt)
     except (ValueError, TypeError):
-        return HTTPException(
+        raise HTTPException(
             status_code=400,
             detail='parameter "date" accept only "yyyy-mm-dd" format')
     else:
