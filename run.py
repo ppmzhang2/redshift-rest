@@ -1,20 +1,13 @@
 import argparse
-import asyncio
 
-import uvloop
-from aiohttp import web
+import uvicorn
 
-from redshift.service import Service
+from redshift.main import app
 
 parser = argparse.ArgumentParser(description='Redshift Rest Service')
 parser.add_argument('--port')
 
 
 if __name__ == '__main__':
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    loop = asyncio.get_event_loop()
-    service = Service()
-    app = service.app
-
     args = parser.parse_args()
-    web.run_app(app, port=args.port)
+    uvicorn.run(app, host='0.0.0.0', port=int(args.port))
